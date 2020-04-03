@@ -29,8 +29,6 @@ import javax.sql.DataSource;
 @EnableAuthorizationServer
 public class AuthorizationServerConfiguration extends AuthorizationServerConfigurerAdapter {
 
-    @Autowired
-    private BCryptPasswordEncoder encoder;
 
 
     @Bean
@@ -54,6 +52,7 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
         return new JdbcClientDetailsService(dataSource());
     }
 
+
     @Override
     public void configure(AuthorizationServerEndpointsConfigurer endpoints) throws Exception {
         endpoints.tokenStore(tokenStore());
@@ -61,10 +60,6 @@ public class AuthorizationServerConfiguration extends AuthorizationServerConfigu
 
     @Override
     public void configure(ClientDetailsServiceConfigurer clients) throws Exception {
-        clients.inMemory().withClient("client")
-        .secret(encoder.encode("secret"))
-        .authorizedGrantTypes("authorization_code")
-        .scopes("app")
-        .redirectUris("https://www.baidu.com");
+        clients.withClientDetails(jdbcClientDetailsService());
     }
 }
